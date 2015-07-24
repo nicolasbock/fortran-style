@@ -1,6 +1,7 @@
 %{
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 /* Turn on debugging. */
 int yydebug = 1;
@@ -27,33 +28,38 @@ void yyerror(char *const message, ...);
 %token <string> NUMBER "number literal"
 %token <string> IDENTIFIER "identifier"
 
-%start source
+%type <string> program_stmt end_program_stmt execution_part
+
+%start program
 
 %printer { fprintf(yyoutput, "%s", $$); } IDENTIFIER NUMBER
 
 %%
 
-source: /* empty */
-| source program
-| source module
+program: /* empty */
+       | program program_unit
 ;
 
-program: PROGRAM IDENTIFIER body END PROGRAM IDENTIFIER
+program_unit: main_program
+;
+
+main_program: program_stmt execution_part end_program_stmt
 {
-    printf("program %s\n", $2);
-    printf("end program %s\n", $6);
+    printf("program %s\n", $1);
+    printf("%s", $2);
+    printf("end program %s\n", $1);
 }
 ;
 
-body: /* empty */
-| body assignemnt
+program_stmt: PROGRAM IDENTIFIER { $$ = $2; }
 ;
 
-module: MODULE module_body END MODULE
+end_program_stmt: END { $$ = NULL; }
+                | END PROGRAM { $$ = NULL; }
+                | END PROGRAM IDENTIFIER { $$ = $3; }
+;
 
-module_body: /* empty */
-
-assignemnt: IDENTIFIER ASSIGNMENT NUMBER
+execution_part: /* empty */ { $$ = strdup("\n"); }
 ;
 
 %%
