@@ -10,6 +10,9 @@
 /** A debug message. */
 #define DEBUG 1
 
+/** Setter for log level. */
+void set_log_level(const int level);
+
 /** The logger function. */
 void logger(const int level, const char *format, ...);
 

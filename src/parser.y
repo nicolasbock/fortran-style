@@ -1,9 +1,10 @@
 %{
-#include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "line_list.h"
 
 /* Turn on debugging. */
 int yydebug = 1;
@@ -13,15 +14,6 @@ extern int yylineno;
 
 /* Declare yyerror(). */
 void yyerror(char *const message, ...);
-
-struct line_list_t {
-    struct line_list_t *next;
-    char *line;
-};
-
-struct line_list_t * append_line(struct line_list_t *lines,
-                                 const struct line_list_t *new_line);
-void print_lines(const int indent, struct line_list_t *lines);
 %}
 
 /* Turn on locations for better error reporting. */
@@ -83,7 +75,11 @@ execution_part: /* empty */ { $$ = NULL; }
               ;
 
 executable_construct: /* empty */ { $$ = NULL; }
-                    | executable_construct action_stmt { $$ = append_line($$, $2); }
+                    | executable_construct action_stmt
+                      {
+                          $$ = append_line($$, $2);
+                          free_lines($2);
+                      }
                     ;
 
 action_stmt: allocate_stmt { $$ = $1; }
@@ -94,6 +90,7 @@ allocate_stmt: ALLOCATE OPEN_PAREN NAME CLOSE_PAREN
                    $$ = calloc(1, sizeof(struct line_list_t));
                    char buffer[1000];
                    snprintf(buffer, 1000, "allocate(%s)", $3);
+                   free($3);
                    $$->line = strdup(buffer);
                }
              ;
@@ -111,33 +108,4 @@ void yyerror(char *const message, ...)
     va_end(ap);
 
     fprintf(stderr, "%s on line %d\n", new_message, yylineno-1);
-}
-
-struct line_list_t * append_line(struct line_list_t *lines,
-                                 const struct line_list_t *new_line)
-{
-    assert(new_line != NULL);
-
-    if(lines == NULL) {
-        lines = calloc(1, sizeof(struct line_list_t));
-        lines->line = strdup(new_line->line);
-    } else {
-        struct line_list_t *last_line = lines;
-        while(last_line->next != NULL) last_line = last_line->next;
-        last_line->next = calloc(1, sizeof(struct line_list_t));
-        last_line->next->line = strdup(new_line->line);
-    }
-    return lines;
-}
-
-void print_lines(const int indent, struct line_list_t *lines)
-{
-    struct line_list_t *line;
-
-    if(lines == NULL) return;
-    for(line = lines; line != NULL; line = line->next) {
-        char indent_format[100];
-        snprintf(indent_format, 100, "%%%ds%%s\n", indent);
-        printf(indent_format, " ", line->line);
-    }
 }

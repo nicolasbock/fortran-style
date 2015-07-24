@@ -23,6 +23,7 @@ add_custom_command(OUTPUT lexer.c
 add_executable(findent
   findent.c
   lexer.c
+  line_list.c
   logger.c
   parser.c)
 

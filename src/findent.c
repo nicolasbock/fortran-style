@@ -15,15 +15,17 @@ static void print_help(void)
     printf("Usage:\n");
     printf("\n");
     printf("{ -h | --help }   This help\n");
+    printf("{ -d | --debug }  Print debugging information\n");
 }
 
 int main(int argc, char **argv)
 {
     extern FILE *yyin;
 
-    const char *short_options = "h";
+    const char *short_options = "hd";
     const struct option long_options[] = {
         { "help", no_argument, NULL, 'h' },
+        { "debug", no_argument, NULL, 'h' },
         { NULL, 0, NULL, 0 }
     };
     char c;
@@ -33,6 +35,10 @@ int main(int argc, char **argv)
         case 'h':
             print_help();
             return 0;
+            break;
+
+        case 'd':
+            set_log_level(DEBUG);
             break;
 
         default:
