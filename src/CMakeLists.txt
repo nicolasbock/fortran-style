@@ -39,7 +39,7 @@ endif()
 message(STATUS "${COMPILE_DEFINITIONS}")
 
 set_target_properties(findent
-  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+  PROPERTIES
   COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS}")
 
 target_link_libraries(findent ${FLEX_LIBRARIES})

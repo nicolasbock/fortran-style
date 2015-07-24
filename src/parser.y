@@ -20,21 +20,41 @@ void yyerror(char *const message, ...);
 }
 
 %token PROGRAM "program"
-%token END_PROGRAM "end program"
-%token <string> ID "identifier"
+%token MODULE "module"
+%token END "end"
+%token DO "do"
+%token ASSIGNMENT "="
+%token <string> NUMBER "number literal"
+%token <string> IDENTIFIER "identifier"
 
-%start input
+%start source
 
-%printer { fprintf(yyoutput, "%s", $$); } ID
+%printer { fprintf(yyoutput, "%s", $$); } IDENTIFIER NUMBER
 
 %%
 
-input: /* empty */
-     | PROGRAM ID program_body END_PROGRAM ID
-     ;
+source: /* empty */
+| source program
+| source module
+;
 
-program_body: /* empty */
-            ;
+program: PROGRAM IDENTIFIER body END PROGRAM IDENTIFIER
+{
+    printf("program %s\n", $2);
+    printf("end program %s\n", $6);
+}
+;
+
+body: /* empty */
+| body assignemnt
+;
+
+module: MODULE module_body END MODULE
+
+module_body: /* empty */
+
+assignemnt: IDENTIFIER ASSIGNMENT NUMBER
+;
 
 %%
 

@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+class FIndent:
+
+    def __init__(self):
+        # The current indentation level
+        self.indent_level = 0
+
+    def increment_level(self, inc):
+        """Increment the indent_level by inc.
+        """
+
+        self.indent_level = self.indent_level+inc
+
+    def indent(self, s):
+        """Indent line s.
+        """
+
+        import re
+
+        s = s.strip()
+        result = re.compile("^\s*program\s+([a-zA-Z][a-zA-Z0-9]*)$").search(s)
+        if result:
+            print("program " + result.group(1))
+            self.increment_level(2)
+
+        result = re.compile("^\s*do\s+([a-zA-Z][a-zA-Z0-9]*)\s+=\s([^,]+)")
+
+def main():
+    """Run through the input files and fix a few stylistic things.
+    """
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("SOURCE",
+                        help = "A free-form Fortran source file",
+                        nargs = "+")
+
+    options = parser.parse_args()
+
+    for s in options.SOURCE:
+        fd = open(s)
+        indenter = FIndent()
+        for line in fd:
+            indenter.indent(line)
+
+if __name__ == "__main__":
+    main()
