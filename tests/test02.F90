@@ -1,6 +1,6 @@
  program     test
 
 
-    allocate  ( i  )
+    alLocate  ( i  )
 
    end  program test

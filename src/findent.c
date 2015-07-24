@@ -50,7 +50,7 @@ int main(int argc, char **argv)
         /* The parser will not read from a file, but only from
          * standard input. We therefore redirect standard input to our
          * input file. */
-        logger(INFO, "Parsing \"%s\"\n", argv[optind]);
+        logger(DEBUG, "parsing \"%s\"\n", argv[optind]);
         yyin = fopen(argv[optind], "r");
         if(yyin == NULL) {
             logger(FATAL, "Could not open input file \"%s\": %s\n",
@@ -59,5 +59,8 @@ int main(int argc, char **argv)
         logger(DEBUG, "calling parser\n");
         yyparse();
         fclose(yyin);
+        logger(DEBUG, "done parsing\n");
     }
+
+    return 0;
 }

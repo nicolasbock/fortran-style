@@ -6,11 +6,11 @@ NAME [a-zA-Z][a-zA-Z0-9_]*
 
 %%
 
-"program"          { return PROGRAM; }
-"module"           { return MODULE; }
-"end"              { return END; }
-"do"               { return DO; }
-"allocate"         { return ALLOCATE; }
+(?i:program)       { return PROGRAM; }
+(?i:module)        { return MODULE; }
+(?i:end)           { return END; }
+(?i:do)            { return DO; }
+(?i:allocate)      { return ALLOCATE; }
 "="                { return ASSIGNMENT; }
 "("                { return OPEN_PAREN; }
 ")"                { return CLOSE_PAREN; }
