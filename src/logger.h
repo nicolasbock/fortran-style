@@ -7,7 +7,10 @@
 /** A simple information message. */
 #define INFO 0
 
+/** A debug message. */
+#define DEBUG 1
+
 /** The logger function. */
-void logger(int level, char *format, ...);
+void logger(const int level, const char *format, ...);
 
 #endif

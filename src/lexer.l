@@ -2,8 +2,7 @@
 #include "parser.h"
 %}
 
-ID [a-zA-Z][0-9a-zA-Z]*
-NUM [0-9]*[.0-9eEdD+-]*
+NAME [a-zA-Z][a-zA-Z0-9_]*
 
 %%
 
@@ -11,7 +10,9 @@ NUM [0-9]*[.0-9eEdD+-]*
 "module"           { return MODULE; }
 "end"              { return END; }
 "do"               { return DO; }
+"allocate"         { return ALLOCATE; }
 "="                { return ASSIGNMENT; }
+"("                { return OPEN_PAREN; }
+")"                { return CLOSE_PAREN; }
 [ \t\n]
-{ID}               { yylval.string = strdup(yytext); return IDENTIFIER; }
-{NUM}              { yylval.string = strdup(yytext); return NUMBER; }
+{NAME}             { yylval.string = strdup(yytext); return NAME; }

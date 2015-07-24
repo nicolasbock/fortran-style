@@ -1,7 +1,9 @@
+#include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -17,6 +19,8 @@ static void print_help(void)
 
 int main(int argc, char **argv)
 {
+    extern FILE *yyin;
+
     const char *short_options = "h";
     const struct option long_options[] = {
         { "help", no_argument, NULL, 'h' },
@@ -47,14 +51,13 @@ int main(int argc, char **argv)
          * standard input. We therefore redirect standard input to our
          * input file. */
         logger(INFO, "Parsing \"%s\"\n", argv[optind]);
-        int fd = open(argv[optind], O_RDONLY);
-        if(fd < 0) {
-            logger(FATAL, "Could not open input file \"%s\"\n", argv[optind]);
+        yyin = fopen(argv[optind], "r");
+        if(yyin == NULL) {
+            logger(FATAL, "Could not open input file \"%s\": %s\n",
+                   argv[optind], strerror(errno));
         }
-        if(dup2(fd, 0) < 0) {
-            logger(FATAL, "Could not redirect to standard input\n");
-        }
+        logger(DEBUG, "calling parser\n");
         yyparse();
-        close(fd);
+        fclose(yyin);
     }
 }
