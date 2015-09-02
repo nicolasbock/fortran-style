@@ -17,6 +17,7 @@
   (interactive (progn
                  (barf-if-buffer-read-only)))
   (message "Cleaning up Fortran style...")
+  (f90-replace-regexp "else[ \t]*if" "else if")
   (cl-loop for k in '("associate"
                       "do while"
                       "do"
