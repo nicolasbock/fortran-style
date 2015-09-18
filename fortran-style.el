@@ -38,6 +38,7 @@
     (cl-loop until (eobp) do (indent-for-tab-command) (forward-line 1)))
   (delete-trailing-whitespace)
   (display-message-or-buffer "Done with cleaning"))
+(byte-compile 'f90-cleanup-style)
 
 ;; regex replace in buffer.
 (defun f90-replace-regexp (regex replacement)
@@ -45,3 +46,4 @@
     (goto-char (point-min))
     (while (re-search-forward regex nil t)
       (replace-match replacement nil nil))))
+(byte-compile 'f90-replace-regexp)
