@@ -2,9 +2,21 @@
 
 class FIndent:
 
-    def __init__(self):
+    def __init__(self,
+                 lines_after_open_procedure=-1):
+
         # The current indentation level
         self.indent_level = 0
+
+        # The options.
+        self.lines_after_open_procedure = lines_after_open_procedure
+
+        # Some compiled regular expressions.
+        import re
+        self.re_name = "[a-zA-Z][a-zA-Z0-9_]*"
+        self.re_program = re.compile("^\s*program\s+(" + self.re_name + ")$")
+        self.re_end_program = re.compile("^\s*end\s+program")
+        self.re_procedure = re.compile("^\s*(subroutine|function)\s*[(]([^)]*[)])")
 
     def increment_level(self, inc):
         """Increment the indent_level by inc.
@@ -12,19 +24,44 @@ class FIndent:
 
         self.indent_level = self.indent_level+inc
 
-    def indent(self, s):
-        """Indent line s.
+    def decrement_level(self, dec):
+        """Decrement the indent_level by dec.
+        """
+
+        self.indent_level = self.indent_level-dec
+
+    def print_indented(self, line):
+        """Print the line according to the current indent_level.
+        """
+
+        print(((("%%%ds" % (self.indent_level)) % (""))) + line.rstrip())
+
+    def indent(self, filename):
+        """Indent file.
+        """
+
+        fd = open(filename)
+        for l in fd:
+            self.indent_line(l)
+        fd.close()
+
+    def indent_line(self, line):
+        """Indent line.
         """
 
         import re
 
-        s = s.strip()
-        result = re.compile("^\s*program\s+([a-zA-Z][a-zA-Z0-9]*)$").search(s)
+        line = line.strip()
+        result = self.re_program.search(line)
         if result:
-            print("program " + result.group(1))
+            self.print_indented("program " + result.group(1))
+            self.program_name = result.group(1)
             self.increment_level(2)
 
-        result = re.compile("^\s*do\s+([a-zA-Z][a-zA-Z0-9]*)\s+=\s([^,]+)")
+        result = self.re_end_program.search(line)
+        if result:
+            self.decrement_level(2)
+            self.print_indented("end program " + self.program_name)
 
 def main():
     """Run through the input files and fix a few stylistic things.
@@ -35,16 +72,20 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("SOURCE",
-                        help = "A free-form Fortran source file",
-                        nargs = "+")
+                        help="A free-form Fortran source file",
+                        nargs="+")
+
+    parser.add_argument("--lines-after-open-procedure",
+                        metavar="N",
+                        help="Maintain N lines after opening a procedure block",
+                        default=-1)
 
     options = parser.parse_args()
 
     for s in options.SOURCE:
-        fd = open(s)
-        indenter = FIndent()
-        for line in fd:
-            indenter.indent(line)
+        indenter = FIndent(
+            lines_after_open_procedure=options.lines_after_open_procedure)
+        indenter.indent(s)
 
 if __name__ == "__main__":
     main()

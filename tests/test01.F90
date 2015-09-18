@@ -1,3 +1,3 @@
  program     test
 
-   end  program test
+   end  program
