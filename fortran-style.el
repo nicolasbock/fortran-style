@@ -26,13 +26,13 @@
                       "select case"
                       "select type"
                       "where")
-           collect (f90-replace-regexp (format "%s[ \t]*([ \t]*" k) (format "%s(" k)))
+           collect (f90-replace-regexp (format "^[ \t]*%s[ \t]*([ \t]*" k) (format "%s(" k)))
   (cl-loop for k in '("associate"
                       "do"
                       "if"
                       "select"
                       "while")
-           collect (f90-replace-regexp (format "[^#]end%s" k) (format "end %s" k)))
+           collect (f90-replace-regexp (format "^[ \t]*end%s" k) (format "end %s" k)))
   (save-excursion
     (goto-char (point-min))
     (cl-loop until (eobp) do (indent-for-tab-command) (forward-line 1)))
